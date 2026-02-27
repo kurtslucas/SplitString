@@ -295,11 +295,61 @@
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
             
-            // Carregar exemplo na aba Dividir
-            textInput.value = '';
+            // NOVA FUNCIONALIDADE: Carregar dados salvos do localStorage
+            function loadSavedData() {
+                // Carregar dados da aba Dividir
+                const savedSplitText = localStorage.getItem('splitText');
+                const savedSeparator = localStorage.getItem('separator');
+                
+                if (savedSplitText) textInput.value = savedSplitText;
+                if (savedSeparator) separatorInput.value = savedSeparator;
+                
+                // Carregar dados da aba Juntar
+                const savedJoinText = localStorage.getItem('joinText');
+                const savedJoinSeparator = localStorage.getItem('joinSeparator');
+                
+                if (savedJoinText) joinTextInput.value = savedJoinText;
+                if (savedJoinSeparator) joinSeparatorInput.value = savedJoinSeparator;
+                
+                // Carregar último resultado da aba Dividir se existir
+                const savedSplitResult = localStorage.getItem('splitResult');
+                const savedSplitCount = localStorage.getItem('splitCount');
+                
+                if (savedSplitResult) {
+                    resultBox.textContent = savedSplitResult;
+                    resultCount.textContent = savedSplitCount || '0 itens';
+                }
+                
+                // Carregar último resultado da aba Juntar se existir
+                const savedJoinResult = localStorage.getItem('joinResult');
+                const savedJoinCount = localStorage.getItem('joinCount');
+                
+                if (savedJoinResult) {
+                    joinResultBox.textContent = savedJoinResult;
+                    joinResultCount.textContent = savedJoinCount || '0 caracteres';
+                }
+            }
             
-            // Carregar exemplo na aba Juntar
-            joinTextInput.value = '';
+            // NOVA FUNCIONALIDADE: Salvar dados no localStorage
+            function saveSplitData() {
+                localStorage.setItem('splitText', textInput.value);
+                localStorage.setItem('separator', separatorInput.value);
+            }
+            
+            function saveJoinData() {
+                localStorage.setItem('joinText', joinTextInput.value);
+                localStorage.setItem('joinSeparator', joinSeparatorInput.value);
+            }
+            
+            function saveSplitResult(result, count) {
+                localStorage.setItem('splitResult', result);
+                localStorage.setItem('splitCount', count);
+            }
+            
+            function saveJoinResult(result, count) {
+                localStorage.setItem('joinResult', result);
+                localStorage.setItem('joinCount', count);
+            }
             
             // Função para alternar entre abas
             function switchTab(tabName) {
@@ -336,11 +386,16 @@
                 }
                 
                 const parts = text.split(separator);
-                // MODIFICAÇÃO AQUI: removido o filter() que removia valores vazios
                 const cleanedParts = parts.map(part => part.trim());
                 
-                resultBox.textContent = cleanedParts.join('\n');
-                resultCount.textContent = `${cleanedParts.length} itens`;
+                const result = cleanedParts.join('\n');
+                const count = `${cleanedParts.length} itens`;
+                
+                resultBox.textContent = result;
+                resultCount.textContent = count;
+                
+                // NOVA FUNCIONALIDADE: Salvar resultado no localStorage
+                saveSplitResult(result, count);
             }
             
             // Função para juntar o texto
@@ -359,12 +414,16 @@
                 }
                 
                 const lines = text.split('\n');
-                // MODIFICAÇÃO AQUI: removido o filter() que removia linhas vazias
                 const cleanedLines = lines.map(line => line.trim());
                 
                 const joinedText = cleanedLines.join(separator);
+                const count = `${joinedText.length} caracteres`;
+                
                 joinResultBox.textContent = joinedText;
-                joinResultCount.textContent = `${joinedText.length} caracteres`;
+                joinResultCount.textContent = count;
+                
+                // NOVA FUNCIONALIDADE: Salvar resultado no localStorage
+                saveJoinResult(joinedText, count);
             }
             
             // Função para limpar os campos da aba Dividir
@@ -373,6 +432,12 @@
                 resultBox.textContent = '';
                 resultCount.textContent = '0 itens';
                 separatorInput.value = ';';
+                
+                // NOVA FUNCIONALIDADE: Limpar dados do localStorage
+                localStorage.removeItem('splitText');
+                localStorage.removeItem('separator');
+                localStorage.removeItem('splitResult');
+                localStorage.removeItem('splitCount');
             }
             
             // Função para limpar os campos da aba Juntar
@@ -381,6 +446,12 @@
                 joinResultBox.textContent = '';
                 joinResultCount.textContent = '0 caracteres';
                 joinSeparatorInput.value = ';';
+                
+                // NOVA FUNCIONALIDADE: Limpar dados do localStorage
+                localStorage.removeItem('joinText');
+                localStorage.removeItem('joinSeparator');
+                localStorage.removeItem('joinResult');
+                localStorage.removeItem('joinCount');
             }
             
             // Função para copiar o resultado da aba Dividir
@@ -423,6 +494,13 @@
                     });
             }
             
+            // NOVA FUNCIONALIDADE: Event listeners para salvar automaticamente
+            textInput.addEventListener('input', saveSplitData);
+            separatorInput.addEventListener('input', saveSplitData);
+            
+            joinTextInput.addEventListener('input', saveJoinData);
+            joinSeparatorInput.addEventListener('input', saveJoinData);
+            
             // Event listeners para as abas
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -439,6 +517,9 @@
             joinBtn.addEventListener('click', joinText);
             clearJoinBtn.addEventListener('click', clearJoinFields);
             copyJoinBtn.addEventListener('click', copyJoinResult);
+            
+            // NOVA FUNCIONALIDADE: Carregar dados salvos ao iniciar
+            loadSavedData();
         });
     </script>
 </body>
