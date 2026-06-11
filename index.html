@@ -5,270 +5,591 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Divisor e Juntador de Texto</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #14b8a6;
+            --secondary-dark: #0d9488;
+            --danger: #f43f5e;
+            --danger-dark: #e11d48;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --success: #22c55e;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.3);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -4px rgba(0,0,0,0.4);
+            --shadow-glow: 0 0 20px rgba(99,102,241,0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: #333;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            background-image: 
+                radial-gradient(ellipse at 10% 20%, rgba(99,102,241,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(20,184,166,0.1) 0%, transparent 50%);
         }
-        
+
         .container {
             width: 100%;
             max-width: 900px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
             margin-top: 20px;
+            animation: fadeInUp 0.6s ease-out;
         }
-        
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         header {
-            background: linear-gradient(90deg, #4a00e0, #8e2de2);
-            color: white;
-            padding: 20px;
             text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 10px;
         }
-        
+
+        .logo-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
         h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        
+
         .subtitle {
-            font-size: 14px;
-            opacity: 0.9;
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto;
         }
-        
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+
         .tabs {
             display: flex;
-            background-color: #f5f5f5;
-            border-bottom: 1px solid #ddd;
+            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid var(--border);
+            position: relative;
         }
-        
+
         .tab {
             flex: 1;
-            padding: 15px;
+            padding: 18px 20px;
             text-align: center;
-            background-color: #f5f5f5;
+            background: transparent;
             border: none;
             font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        
+
+        .tab:hover {
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.03);
+        }
+
         .tab.active {
-            background-color: white;
-            color: #4a00e0;
-            border-bottom: 3px solid #4a00e0;
+            color: var(--primary-light);
         }
-        
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px 3px 0 0;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
         .tab-content {
             display: none;
-            padding: 25px;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
-        
+
         label {
-            display: block;
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
-            color: #444;
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        textarea, input {
+
+        label i {
+            color: var(--primary-light);
+            font-size: 14px;
+        }
+
+        textarea, input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
             font-size: 15px;
-            transition: border 0.3s;
-        }
-        
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-        
-        textarea:focus, input:focus {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
             outline: none;
-            border-color: #4a00e0;
-            box-shadow: 0 0 0 2px rgba(74, 0, 224, 0.1);
         }
-        
+
+        textarea::placeholder, input::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.15), var(--shadow-glow);
+        }
+
+        textarea {
+            min-height: 160px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
         }
-        
-        button {
+
+        .btn {
             flex: 1;
-            padding: 12px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 140px;
         }
-        
+
         .btn-primary {
-            background-color: #4a00e0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
+            box-shadow: 0 4px 14px rgba(99,102,241,0.4);
         }
-        
+
         .btn-primary:hover {
-            background-color: #3a00b0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99,102,241,0.5);
         }
-        
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-copy-input {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 14px rgba(139,92,246,0.3);
+        }
+
+        .btn-copy-input:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139,92,246,0.4);
+        }
+
+        .btn-copy-input.copied {
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            box-shadow: 0 4px 14px rgba(34,197,94,0.3);
+        }
+
         .btn-secondary {
-            background-color: #f0f0f0;
-            color: #444;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
         }
-        
+
         .btn-secondary:hover {
-            background-color: #e0e0e0;
+            background: var(--border);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
         }
-        
+
         .result-container {
-            margin-top: 20px;
+            margin-top: 24px;
+            animation: fadeIn 0.4s ease;
         }
-        
+
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
-        
+
+        .result-header h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-header h3 i {
+            color: var(--secondary);
+        }
+
         .result-count {
-            font-size: 14px;
-            color: #666;
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
         }
-        
+
         .result-box {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            border-radius: 6px;
-            padding: 15px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
             min-height: 200px;
             max-height: 400px;
             overflow-y: auto;
-            font-family: monospace;
-            white-space: pre-wrap;
-            line-height: 1.5;
-        }
-        
-        .copy-btn {
-            background-color: #00b894;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 14px;
-            transition: background-color 0.3s;
-            margin-top: 10px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: break-all;
+            transition: all 0.3s ease;
+        }
+
+        .result-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .result-box::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+            border-radius: 4px;
+        }
+
+        .result-box::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .result-box::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .result-box.has-content {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99,102,241,0.1);
+        }
+
+        .copy-btn {
             width: 100%;
+            margin-top: 12px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(20,184,166,0.3);
         }
-        
+
         .copy-btn:hover {
-            background-color: #00a085;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(20,184,166,0.4);
         }
-        
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            box-shadow: 0 4px 14px rgba(34,197,94,0.3);
+        }
+
+        .copy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast i {
+            color: var(--success);
+            font-size: 18px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
         @media (max-width: 600px) {
-            .button-group {
-                flex-direction: column;
-            }
-            
-            .container {
-                margin-top: 10px;
-            }
+            body { padding: 10px; }
+            h1 { font-size: 24px; }
+            .tab-content { padding: 20px; }
+            .button-group { flex-direction: column; }
+            .btn { width: 100%; min-width: unset; }
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .stat-item i {
+            color: var(--primary-light);
+        }
+
+        .stat-item strong {
+            color: var(--text-primary);
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <div class="logo-icon"><i class="fas fa-scissors"></i></div>
             <h1>Divisor e Juntador de Texto</h1>
-            <p class="subtitle">Divida ou junte textos usando separadores personalizados</p>
+            <p class="subtitle">Divida ou junte textos usando separadores personalizados com estilo</p>
         </header>
-        
-        <div class="tabs">
-            <button class="tab active" data-tab="split">Dividir Texto</button>
-            <button class="tab" data-tab="join">Juntar Texto</button>
-        </div>
-        
-        <!-- Aba Dividir Texto -->
-        <div class="tab-content active" id="split-tab">
-            <div class="input-group">
-                <label for="text-input">Texto para dividir:</label>
-                <textarea id="text-input" placeholder="Cole ou digite o texto que deseja dividir aqui..."></textarea>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" data-tab="split">
+                    <i class="fas fa-cut"></i> Dividir Texto
+                </button>
+                <button class="tab" data-tab="join">
+                    <i class="fas fa-link"></i> Juntar Texto
+                </button>
             </div>
-            
-            <div class="input-group">
-                <label for="separator">Dividir usando esta palavra:</label>
-                <input type="text" id="separator" value=";" placeholder="Digite o separador...">
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-primary" id="split-btn">Dividir Texto</button>
-                <button class="btn-secondary" id="clear-split-btn">Limpar</button>
-            </div>
-            
-            <div class="result-container">
-                <div class="result-header">
-                    <h3>Resultado</h3>
-                    <span class="result-count" id="result-count">0 itens</span>
+
+            <!-- Aba Dividir Texto -->
+            <div class="tab-content active" id="split-tab">
+                <div class="input-group">
+                    <label for="text-input"><i class="fas fa-align-left"></i> Texto para dividir</label>
+                    <textarea id="text-input" placeholder="Cole ou digite o texto que deseja dividir aqui..."></textarea>
                 </div>
-                <div class="result-box" id="result-box"></div>
-                <button class="copy-btn" id="copy-split-btn">Copiar Resultado</button>
-            </div>
-        </div>
-        
-        <!-- Aba Juntar Texto -->
-        <div class="tab-content" id="join-tab">
-            <div class="input-group">
-                <label for="join-text-input">Texto para juntar (uma linha por item):</label>
-                <textarea id="join-text-input" placeholder="Cole ou digite o texto com quebras de linha..."></textarea>
-            </div>
-            
-            <div class="input-group">
-                <label for="join-separator">Juntar usando esta palavra:</label>
-                <input type="text" id="join-separator" value=";" placeholder="Digite o separador...">
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-primary" id="join-btn">Juntar Texto</button>
-                <button class="btn-secondary" id="clear-join-btn">Limpar</button>
-            </div>
-            
-            <div class="result-container">
-                <div class="result-header">
-                    <h3>Resultado</h3>
-                    <span class="result-count" id="join-result-count">0 caracteres</span>
+
+                <div class="input-group">
+                    <label for="separator"><i class="fas fa-divide"></i> Dividir usando esta palavra</label>
+                    <input type="text" id="separator" value=";" placeholder="Digite o separador...">
                 </div>
-                <div class="result-box" id="join-result-box"></div>
-                <button class="copy-btn" id="copy-join-btn">Copiar Resultado</button>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="split-btn">
+                        <i class="fas fa-scissors"></i> Dividir Texto
+                    </button>
+                    <button class="btn btn-copy-input" id="copy-split-input-btn">
+                        <i class="fas fa-copy"></i> Copiar Entrada
+                    </button>
+                    <button class="btn btn-secondary" id="clear-split-btn">
+                        <i class="fas fa-trash-alt"></i> Limpar
+                    </button>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-header">
+                        <h3><i class="fas fa-list-ul"></i> Resultado</h3>
+                        <span class="result-count" id="result-count">0 itens</span>
+                    </div>
+                    <div class="result-box" id="result-box">
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>O resultado aparecerá aqui</p>
+                        </div>
+                    </div>
+                    <button class="copy-btn" id="copy-split-btn">
+                        <i class="fas fa-copy"></i> Copiar Resultado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aba Juntar Texto -->
+            <div class="tab-content" id="join-tab">
+                <div class="input-group">
+                    <label for="join-text-input"><i class="fas fa-align-left"></i> Texto para juntar (uma linha por item)</label>
+                    <textarea id="join-text-input" placeholder="Cole ou digite o texto com quebras de linha..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="join-separator"><i class="fas fa-link"></i> Juntar usando esta palavra</label>
+                    <input type="text" id="join-separator" value=";" placeholder="Digite o separador...">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="join-btn">
+                        <i class="fas fa-link"></i> Juntar Texto
+                    </button>
+                    <button class="btn btn-copy-input" id="copy-join-input-btn">
+                        <i class="fas fa-copy"></i> Copiar Entrada
+                    </button>
+                    <button class="btn btn-secondary" id="clear-join-btn">
+                        <i class="fas fa-trash-alt"></i> Limpar
+                    </button>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-header">
+                        <h3><i class="fas fa-file-alt"></i> Resultado</h3>
+                        <span class="result-count" id="join-result-count">0 caracteres</span>
+                    </div>
+                    <div class="result-box" id="join-result-box">
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>O resultado aparecerá aqui</p>
+                        </div>
+                    </div>
+                    <button class="copy-btn" id="copy-join-btn">
+                        <i class="fas fa-copy"></i> Copiar Resultado
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Copiado para a área de transferência!</span>
     </div>
 
     <script>
@@ -277,81 +598,93 @@
             const textInput = document.getElementById('text-input');
             const separatorInput = document.getElementById('separator');
             const splitBtn = document.getElementById('split-btn');
+            const copySplitInputBtn = document.getElementById('copy-split-input-btn');
             const clearSplitBtn = document.getElementById('clear-split-btn');
             const resultBox = document.getElementById('result-box');
             const resultCount = document.getElementById('result-count');
             const copySplitBtn = document.getElementById('copy-split-btn');
-            
+
             // Elementos da aba Juntar
             const joinTextInput = document.getElementById('join-text-input');
             const joinSeparatorInput = document.getElementById('join-separator');
             const joinBtn = document.getElementById('join-btn');
+            const copyJoinInputBtn = document.getElementById('copy-join-input-btn');
             const clearJoinBtn = document.getElementById('clear-join-btn');
             const joinResultBox = document.getElementById('join-result-box');
             const joinResultCount = document.getElementById('join-result-count');
             const copyJoinBtn = document.getElementById('copy-join-btn');
-            
+
             // Elementos das abas
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
-            
-            // NOVA FUNCIONALIDADE: Carregar dados salvos do localStorage
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            // Toast notification
+            function showToast(message, type = 'success') {
+                toastMessage.textContent = message;
+                const icon = toast.querySelector('i');
+                icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+                icon.style.color = type === 'success' ? 'var(--success)' : 'var(--danger)';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+
+            // Carregar dados salvos do localStorage
             function loadSavedData() {
-                // Carregar dados da aba Dividir
                 const savedSplitText = localStorage.getItem('splitText');
                 const savedSeparator = localStorage.getItem('separator');
-                
+
                 if (savedSplitText) textInput.value = savedSplitText;
                 if (savedSeparator) separatorInput.value = savedSeparator;
-                
-                // Carregar dados da aba Juntar
+
                 const savedJoinText = localStorage.getItem('joinText');
                 const savedJoinSeparator = localStorage.getItem('joinSeparator');
-                
+
                 if (savedJoinText) joinTextInput.value = savedJoinText;
                 if (savedJoinSeparator) joinSeparatorInput.value = savedJoinSeparator;
-                
-                // Carregar último resultado da aba Dividir se existir
+
                 const savedSplitResult = localStorage.getItem('splitResult');
                 const savedSplitCount = localStorage.getItem('splitCount');
-                
+
                 if (savedSplitResult) {
                     resultBox.textContent = savedSplitResult;
+                    resultBox.classList.add('has-content');
                     resultCount.textContent = savedSplitCount || '0 itens';
                 }
-                
-                // Carregar último resultado da aba Juntar se existir
+
                 const savedJoinResult = localStorage.getItem('joinResult');
                 const savedJoinCount = localStorage.getItem('joinCount');
-                
+
                 if (savedJoinResult) {
                     joinResultBox.textContent = savedJoinResult;
+                    joinResultBox.classList.add('has-content');
                     joinResultCount.textContent = savedJoinCount || '0 caracteres';
                 }
             }
-            
-            // NOVA FUNCIONALIDADE: Salvar dados no localStorage
+
+            // Salvar dados no localStorage
             function saveSplitData() {
                 localStorage.setItem('splitText', textInput.value);
                 localStorage.setItem('separator', separatorInput.value);
             }
-            
+
             function saveJoinData() {
                 localStorage.setItem('joinText', joinTextInput.value);
                 localStorage.setItem('joinSeparator', joinSeparatorInput.value);
             }
-            
+
             function saveSplitResult(result, count) {
                 localStorage.setItem('splitResult', result);
                 localStorage.setItem('splitCount', count);
             }
-            
+
             function saveJoinResult(result, count) {
                 localStorage.setItem('joinResult', result);
                 localStorage.setItem('joinCount', count);
             }
-            
-            // Função para alternar entre abas
+
+            // Alternar entre abas
             function switchTab(tabName) {
                 tabs.forEach(tab => {
                     if (tab.dataset.tab === tabName) {
@@ -360,7 +693,7 @@
                         tab.classList.remove('active');
                     }
                 });
-                
+
                 tabContents.forEach(content => {
                     if (content.id === `${tabName}-tab`) {
                         content.classList.add('active');
@@ -369,156 +702,234 @@
                     }
                 });
             }
-            
-            // Função para dividir o texto
+
+            // Dividir texto
             function splitText() {
-                const text = textInput.value.trim();
-                const separator = separatorInput.value.trim();
-                
-                if (!text) {
-                    alert('Por favor, insira um texto para dividir.');
+                const text = textInput.value;
+                const separator = separatorInput.value;
+
+                if (!text.trim()) {
+                    showToast('Por favor, insira um texto para dividir.', 'error');
+                    textInput.focus();
                     return;
                 }
-                
+
                 if (!separator) {
-                    alert('Por favor, insira um separador.');
+                    showToast('Por favor, insira um separador.', 'error');
+                    separatorInput.focus();
                     return;
                 }
-                
+
                 const parts = text.split(separator);
-                const cleanedParts = parts.map(part => part.trim());
-                
+                const cleanedParts = parts.map(part => part.trim()).filter(part => part !== '');
+
                 const result = cleanedParts.join('\n');
-                const count = `${cleanedParts.length} itens`;
-                
+                const count = `${cleanedParts.length} item${cleanedParts.length !== 1 ? 's' : ''}`;
+
                 resultBox.textContent = result;
+                resultBox.classList.add('has-content');
                 resultCount.textContent = count;
-                
-                // NOVA FUNCIONALIDADE: Salvar resultado no localStorage
+
                 saveSplitResult(result, count);
+                showToast(`Texto dividido em ${cleanedParts.length} item(s)!`);
             }
-            
-            // Função para juntar o texto
+
+            // Juntar texto
             function joinText() {
-                const text = joinTextInput.value.trim();
-                const separator = joinSeparatorInput.value.trim();
-                
-                if (!text) {
-                    alert('Por favor, insira um texto para juntar.');
+                const text = joinTextInput.value;
+                const separator = joinSeparatorInput.value;
+
+                if (!text.trim()) {
+                    showToast('Por favor, insira um texto para juntar.', 'error');
+                    joinTextInput.focus();
                     return;
                 }
-                
+
                 if (!separator) {
-                    alert('Por favor, insira um separador.');
+                    showToast('Por favor, insira um separador.', 'error');
+                    joinSeparatorInput.focus();
                     return;
                 }
-                
+
                 const lines = text.split('\n');
-                const cleanedLines = lines.map(line => line.trim());
-                
+                const cleanedLines = lines.map(line => line.trim()).filter(line => line !== '');
+
                 const joinedText = cleanedLines.join(separator);
-                const count = `${joinedText.length} caracteres`;
-                
+                const count = `${joinedText.length} caractere${joinedText.length !== 1 ? 's' : ''}`;
+
                 joinResultBox.textContent = joinedText;
+                joinResultBox.classList.add('has-content');
                 joinResultCount.textContent = count;
-                
-                // NOVA FUNCIONALIDADE: Salvar resultado no localStorage
+
                 saveJoinResult(joinedText, count);
+                showToast(`Texto juntado! ${joinedText.length} caracteres no total.`);
             }
-            
-            // Função para limpar os campos da aba Dividir
+
+            // Limpar campos da aba Dividir
             function clearSplitFields() {
                 textInput.value = '';
-                resultBox.textContent = '';
+                resultBox.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>O resultado aparecerá aqui</p></div>`;
+                resultBox.classList.remove('has-content');
                 resultCount.textContent = '0 itens';
                 separatorInput.value = ';';
-                
-                // NOVA FUNCIONALIDADE: Limpar dados do localStorage
+
                 localStorage.removeItem('splitText');
                 localStorage.removeItem('separator');
                 localStorage.removeItem('splitResult');
                 localStorage.removeItem('splitCount');
+                showToast('Campos limpos!');
             }
-            
-            // Função para limpar os campos da aba Juntar
+
+            // Limpar campos da aba Juntar
             function clearJoinFields() {
                 joinTextInput.value = '';
-                joinResultBox.textContent = '';
+                joinResultBox.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>O resultado aparecerá aqui</p></div>`;
+                joinResultBox.classList.remove('has-content');
                 joinResultCount.textContent = '0 caracteres';
                 joinSeparatorInput.value = ';';
-                
-                // NOVA FUNCIONALIDADE: Limpar dados do localStorage
+
                 localStorage.removeItem('joinText');
                 localStorage.removeItem('joinSeparator');
                 localStorage.removeItem('joinResult');
                 localStorage.removeItem('joinCount');
+                showToast('Campos limpos!');
             }
-            
-            // Função para copiar o resultado da aba Dividir
-            function copySplitResult() {
-                if (!resultBox.textContent) {
-                    alert('Nenhum resultado para copiar.');
+
+            // Copiar resultado da aba Dividir
+            async function copySplitResult() {
+                const content = resultBox.textContent.trim();
+                if (!content || resultBox.querySelector('.empty-state')) {
+                    showToast('Nenhum resultado para copiar.', 'error');
                     return;
                 }
-                
-                navigator.clipboard.writeText(resultBox.textContent)
-                    .then(() => {
-                        copySplitBtn.textContent = 'Copiado!';
-                        setTimeout(() => {
-                            copySplitBtn.textContent = 'Copiar Resultado';
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Erro ao copiar: ', err);
-                        alert('Erro ao copiar o texto.');
-                    });
+
+                try {
+                    await navigator.clipboard.writeText(content);
+                    copySplitBtn.classList.add('copied');
+                    copySplitBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    showToast('Resultado copiado para a área de transferência!');
+
+                    setTimeout(() => {
+                        copySplitBtn.classList.remove('copied');
+                        copySplitBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Resultado';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Erro ao copiar:', err);
+                    showToast('Erro ao copiar o texto.', 'error');
+                }
             }
-            
-            // Função para copiar o resultado da aba Juntar
-            function copyJoinResult() {
-                if (!joinResultBox.textContent) {
-                    alert('Nenhum resultado para copiar.');
+
+            // Copiar resultado da aba Juntar
+            async function copyJoinResult() {
+                const content = joinResultBox.textContent.trim();
+                if (!content || joinResultBox.querySelector('.empty-state')) {
+                    showToast('Nenhum resultado para copiar.', 'error');
                     return;
                 }
-                
-                navigator.clipboard.writeText(joinResultBox.textContent)
-                    .then(() => {
-                        copyJoinBtn.textContent = 'Copiado!';
-                        setTimeout(() => {
-                            copyJoinBtn.textContent = 'Copiar Resultado';
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Erro ao copiar: ', err);
-                        alert('Erro ao copiar o texto.');
-                    });
+
+                try {
+                    await navigator.clipboard.writeText(content);
+                    copyJoinBtn.classList.add('copied');
+                    copyJoinBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    showToast('Resultado copiado para a área de transferência!');
+
+                    setTimeout(() => {
+                        copyJoinBtn.classList.remove('copied');
+                        copyJoinBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Resultado';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Erro ao copiar:', err);
+                    showToast('Erro ao copiar o texto.', 'error');
+                }
             }
-            
-            // NOVA FUNCIONALIDADE: Event listeners para salvar automaticamente
+
+            // Copiar ENTRADA da aba Dividir
+            async function copySplitInput() {
+                const content = textInput.value.trim();
+                if (!content) {
+                    showToast('Nenhum texto de entrada para copiar.', 'error');
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(content);
+                    copySplitInputBtn.classList.add('copied');
+                    copySplitInputBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    showToast('Texto de entrada copiado!');
+
+                    setTimeout(() => {
+                        copySplitInputBtn.classList.remove('copied');
+                        copySplitInputBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Entrada';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Erro ao copiar:', err);
+                    showToast('Erro ao copiar o texto.', 'error');
+                }
+            }
+
+            // Copiar ENTRADA da aba Juntar
+            async function copyJoinInput() {
+                const content = joinTextInput.value.trim();
+                if (!content) {
+                    showToast('Nenhum texto de entrada para copiar.', 'error');
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(content);
+                    copyJoinInputBtn.classList.add('copied');
+                    copyJoinInputBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    showToast('Texto de entrada copiado!');
+
+                    setTimeout(() => {
+                        copyJoinInputBtn.classList.remove('copied');
+                        copyJoinInputBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Entrada';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Erro ao copiar:', err);
+                    showToast('Erro ao copiar o texto.', 'error');
+                }
+            }
+
+            // Event listeners para salvar automaticamente
             textInput.addEventListener('input', saveSplitData);
             separatorInput.addEventListener('input', saveSplitData);
-            
+
             joinTextInput.addEventListener('input', saveJoinData);
             joinSeparatorInput.addEventListener('input', saveJoinData);
-            
+
             // Event listeners para as abas
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     switchTab(tab.dataset.tab);
                 });
             });
-            
+
             // Event listeners da aba Dividir
             splitBtn.addEventListener('click', splitText);
+            copySplitInputBtn.addEventListener('click', copySplitInput);
             clearSplitBtn.addEventListener('click', clearSplitFields);
             copySplitBtn.addEventListener('click', copySplitResult);
-            
+
             // Event listeners da aba Juntar
             joinBtn.addEventListener('click', joinText);
+            copyJoinInputBtn.addEventListener('click', copyJoinInput);
             clearJoinBtn.addEventListener('click', clearJoinFields);
             copyJoinBtn.addEventListener('click', copyJoinResult);
-            
-            // NOVA FUNCIONALIDADE: Carregar dados salvos ao iniciar
+
+            // Atalhos de teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    const activeTab = document.querySelector('.tab-content.active');
+                    if (activeTab.id === 'split-tab') {
+                        splitText();
+                    } else {
+                        joinText();
+                    }
+                }
+            });
+
+            // Carregar dados salvos ao iniciar
             loadSavedData();
         });
     </script>
